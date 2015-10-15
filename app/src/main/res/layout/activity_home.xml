@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:staggered="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffff6200">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="PRODUCTS"
+        android:id="@+id/textView"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:textColor="#ffffffff"
+        android:textSize="30dp" />
+
+    <com.test.grapes.StaggeredGridView.StaggeredGridView
+        android:id="@+id/stgv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        staggered:numColumns="2"
+        staggered:drawSelectorOnTop="true"/>
+
+</LinearLayout>
