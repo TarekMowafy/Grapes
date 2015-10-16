@@ -9,30 +9,27 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.etsy.android.grid.StaggeredGridView;
 import com.test.grapes.API.ApiService;
 import com.test.grapes.Models.Product;
-import com.test.grapes.StaggeredGridView.StaggeredGridView;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
 
 
-public class Home extends Activity {
+public class Home extends Activity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener {
 
 
     StaggeredGridView stgv;
     GRIDAdapter mAdapter;
-    boolean isAdapterSet= false;
+    boolean mRequestedMore;
 
-    public static int FROM = 0;     //Starting value for fetching data from server
-    public static String URL = "http://grapesnberries.getsandbox.com/products?count=10&from=";
+    public static final String SAVED_DATA_KEY = "SAVED_DATA";
+    public static int FROM ;     //Starting value for fetching data from server
     public List<Product> PRODUCTS_LIST = new LinkedList<Product>();
 
 
@@ -41,40 +38,40 @@ public class Home extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        stgv = (StaggeredGridView) findViewById(R.id.stgv);
+        FROM = 0;
 
-        int margin = getResources().getDimensionPixelSize(R.dimen.stgv_margin);
-
-        stgv.setItemMargin(margin);
-        stgv.setPadding(margin, 0, margin, 0);
-
-        View footerView;
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        footerView = inflater.inflate(R.layout.layout_loading_footer, null);
-        stgv.setFooterView(footerView);
-
-        mAdapter = new GRIDAdapter(this, getApplication());
+        stgv = (StaggeredGridView) findViewById(R.id.grid_view);
+        mAdapter = new GRIDAdapter(this,R.id.imgView,PRODUCTS_LIST);
+        stgv.setOnScrollListener(this);
 
         new LoadProducts().execute();
 
-        stgv.setOnLoadmoreListener(new StaggeredGridView.OnLoadmoreListener() {
-            @Override
-            public void onLoadmore() {
-                FROM =FROM+10;
-                new LoadProducts().execute();
-            }
-        });
     }
 
-    private class LoadProducts extends AsyncTask<String ,Integer, List<Product>>{
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+    }
 
-        @Override
-        protected void onPreExecute() {
-
-
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        if (scrollState == SCROLL_STATE_IDLE) {
+            if (view.getLastVisiblePosition() >= view.getCount() - 1 - 0) {
+                FROM+=10;
+                //load more list items:
+                new LoadProducts().execute();
+            }
         }
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+    }
+
+
+    private class LoadProducts extends AsyncTask<String ,Integer, List<Product>>{
 
         @Override
         protected List<Product> doInBackground(String... params) {
@@ -87,24 +84,17 @@ public class Home extends Activity {
         protected void onPostExecute(List<Product> results) {
 
             StringBuilder sb = new StringBuilder();
-            Log.d("Products Output: ", String.valueOf(results.size()));
             for(Product product: results)
             {
-                Log.d("Products Output: ", product.getImage().getUrl());
                 sb.append(product.getImage().getUrl() + "\n");
                 PRODUCTS_LIST.add(product);
             }
-            Log.d("Products Output: ", String.valueOf(PRODUCTS_LIST.size()));
 
+            mAdapter.getItems(PRODUCTS_LIST);
+            mAdapter.notifyDataSetChanged();
+            stgv.setAdapter(mAdapter);
 
-            mAdapter.getMoreItem(PRODUCTS_LIST,FROM);
-            if(!isAdapterSet){
-                stgv.setAdapter(mAdapter);
-                mAdapter.notifyDataSetChanged();
-                isAdapterSet=true;
-            }else{
-                mAdapter.notifyDataSetChanged();
-            }
+            Log.d("PSet Adapter: ", String.valueOf(PRODUCTS_LIST.size()));
         }
     }
 
@@ -129,4 +119,6 @@ public class Home extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }
