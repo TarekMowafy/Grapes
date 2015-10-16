@@ -1,14 +1,10 @@
 package com.test.grapes;
 
-import android.app.Application;
 import android.content.Context;
-import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.etsy.android.grid.util.DynamicHeightImageView;
@@ -17,7 +13,6 @@ import com.test.grapes.Models.Product;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 public class GRIDAdapter extends ArrayAdapter {
     private Context mContext;
@@ -43,10 +38,8 @@ public class GRIDAdapter extends ArrayAdapter {
         Holder holder;
 
         if (convertView == null) {
+            convertView = mLayoutInflater.inflate(R.layout.product_item, parent, false);
             holder = new Holder();
-            LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = li.inflate(R.layout.product_item, null);
-
             holder.img_content = (DynamicHeightImageView) convertView.findViewById(R.id.imgView);
             holder.tv_price = (TextView) convertView.findViewById(R.id.tv_Price);
             holder.tv_desc = (TextView) convertView.findViewById(R.id.tv_description);
@@ -59,7 +52,6 @@ public class GRIDAdapter extends ArrayAdapter {
 
         holder.tv_price.setText("$ " + String.valueOf(product.getPrice()));
         holder.tv_desc.setText(product.getProductDescription());
-
 
         Picasso.with(mContext).setIndicatorsEnabled(true);
         Picasso.with(mContext)
