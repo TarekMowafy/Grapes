@@ -23,9 +23,6 @@ public class Home extends Activity implements AbsListView.OnScrollListener, AbsL
 
     StaggeredGridView stgv;
     GRIDAdapter mAdapter;
-    boolean mRequestedMore;
-
-    public static final String SAVED_DATA_KEY = "SAVED_DATA";
     public static int FROM ;     //Starting value for fetching data from server
     public List<Product> PRODUCTS_LIST = new LinkedList<Product>();
 
@@ -36,7 +33,6 @@ public class Home extends Activity implements AbsListView.OnScrollListener, AbsL
         setContentView(R.layout.activity_home);
 
         FROM = 0;
-
         stgv = (StaggeredGridView) findViewById(R.id.grid_view);
         mAdapter = new GRIDAdapter(this,R.id.imgView,PRODUCTS_LIST);
         stgv.setOnScrollListener(this);
@@ -90,8 +86,6 @@ public class Home extends Activity implements AbsListView.OnScrollListener, AbsL
             mAdapter.getItems(PRODUCTS_LIST);
             mAdapter.notifyDataSetChanged();
             stgv.setAdapter(mAdapter);
-
-            Log.d("PSet Adapter: ", String.valueOf(PRODUCTS_LIST.size()));
         }
     }
 
